@@ -1,7 +1,6 @@
 import { lineString, bezierSpline } from '@turf/turf';
 import { Point } from './Point';
 
-
 export function createSplineBezier(points: Point[]): Point[] {
   const sPoints = points.map((p) => [p.x, p.y]);
   const line = lineString(sPoints);

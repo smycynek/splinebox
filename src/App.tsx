@@ -23,17 +23,16 @@ const App: Component = () => {
   // Canvas height
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [height, setHeight] = createSignal(0);
-  const [useBezier, setUseBezier] = createSignal(true);
+  const [splineMode, setSplineMode] = createSignal(0);
 
   const [pointIndex, setPointIndex] = createSignal(-1);
 
   const standardPoints = [
-    new Point(-5, -5),
-    new Point(-4, -1),
-    new Point(-2, 2),
-    new Point(0, -2),
-    new Point(3, 4),
-    new Point(4, 3),
+    new Point(-4, -4),
+    new Point(-2, -3),
+    new Point(0, 0),
+    new Point(2, 3),
+    new Point(4, 4),
   ];
 
   const [points, setPoints] = createSignal([...standardPoints]);
@@ -107,13 +106,12 @@ const App: Component = () => {
     ctx?.clearRect(0, 0, canvas.width, canvas.height);
     drawGrid();
 
-
     let spline;
 
-    if (useBezier()) {
+    if (splineMode() === 0) {
       spline = createSplineBezier(points());
     } else {
-      spline = createSplineNurbs(points());
+      spline = createSplineNurbs(points(), splineMode());
     }
     points().forEach((p) => {
       drawPoint(
@@ -124,10 +122,7 @@ const App: Component = () => {
       );
     });
 
-    drawCurvePointCartSegments(
-      spline,
-      getDrawConfig(Color.purple)
-    );
+    drawCurvePointCartSegments(spline, getDrawConfig(Color.purple));
   };
 
   const drawGridPoint = (x: number, y: number) => {
@@ -215,7 +210,10 @@ const App: Component = () => {
   };
 
   const toggleTypeHander = () => {
-    setUseBezier(!useBezier());
+    setSplineMode(splineMode() + 1);
+    if (splineMode() > 4) {
+      setSplineMode(0);
+    }
     drawSplines();
   };
 
@@ -311,7 +309,9 @@ const App: Component = () => {
             Reset
           </button>
 
-          <button onClick={toggleTypeHander} class="actionButton">Switch to {useBezier() ? 'NURB' : 'Bezier'}</button>
+          <button onClick={toggleTypeHander} class="actionButton">
+            Switch to {splineMode() !== 4 ? `NURB degree ${splineMode() + 1}` : 'Bezier'}
+          </button>
         </div>
       </header>
     </div>
