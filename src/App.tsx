@@ -4,9 +4,11 @@ import { Point } from './Point';
 import { Color } from './color';
 import { Logger, LoggerLevel } from './Logger';
 
-import { createSpline } from './splines';
+// import { createSplineBezier } from './bezier';
 import { getMousePos, getTouchPos, near } from './utility';
 import { Constants } from './constants';
+import { createSplineNurbs } from './nurbs';
+import { createSplineBezier } from './bezier';
 
 interface DrawConfig {
   color: Color;
@@ -21,6 +23,7 @@ const App: Component = () => {
   // Canvas height
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [height, setHeight] = createSignal(0);
+  const [useBezier, setUseBezier] = createSignal(true);
 
   const [pointIndex, setPointIndex] = createSignal(-1);
 
@@ -104,7 +107,14 @@ const App: Component = () => {
     ctx?.clearRect(0, 0, canvas.width, canvas.height);
     drawGrid();
 
-    const spline = createSpline(points());
+
+    let spline;
+
+    if (useBezier()) {
+      spline = createSplineBezier(points());
+    } else {
+      spline = createSplineNurbs(points());
+    }
     points().forEach((p) => {
       drawPoint(
         canvas.width / 2 + p.x * Constants.scale,
@@ -115,7 +125,7 @@ const App: Component = () => {
     });
 
     drawCurvePointCartSegments(
-      spline.geometry.coordinates.map((c: number[]) => new Point(c[0], c[1])),
+      spline,
       getDrawConfig(Color.purple)
     );
   };
@@ -201,6 +211,11 @@ const App: Component = () => {
 
   const resetButtonHandler = () => {
     setPoints([...standardPoints]);
+    drawSplines();
+  };
+
+  const toggleTypeHander = () => {
+    setUseBezier(!useBezier());
     drawSplines();
   };
 
@@ -295,6 +310,8 @@ const App: Component = () => {
           <button onClick={resetButtonHandler} class="actionButton">
             Reset
           </button>
+
+          <button onClick={toggleTypeHander} class="actionButton">Switch to {useBezier() ? 'NURB' : 'Bezier'}</button>
         </div>
       </header>
     </div>

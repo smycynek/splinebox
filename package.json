@@ -13,6 +13,7 @@
   },
   "license": "MIT",
   "devDependencies": {
+    "@types/node": "^25.6.2",
     "@typescript-eslint/eslint-plugin": "^8.47.0",
     "@typescript-eslint/parser": "^8.47.0",
     "eslint": "^9.38.0",
@@ -32,6 +33,7 @@
     "@corvu/dialog": "^0.2.4",
     "@turf/turf": "^7.3.5",
     "install": "^0.13.0",
+    "nurbs": "^1.1.1",
     "solid-js": "^1.9.5"
   }
 }
