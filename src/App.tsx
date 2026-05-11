@@ -7,7 +7,7 @@ import { Logger, LoggerLevel } from './Logger';
 // import { createSplineBezier } from './bezier';
 import { getMousePos, getTouchPos, near } from './utility';
 import { Constants } from './constants';
-import { createSplineNurbs } from './nurbs';
+import { createSplineNurbs, createSplineNurbTangents } from './nurbs';
 import { createSplineBezier } from './bezier';
 
 interface DrawConfig {
@@ -15,6 +15,8 @@ interface DrawConfig {
   scale: number;
   offset: Point;
   canvas: HTMLCanvasElement;
+  width: number;
+  solid: boolean;
 }
 
 const App: Component = () => {
@@ -29,9 +31,9 @@ const App: Component = () => {
 
   const standardPoints = [
     new Point(-4, -4),
-    new Point(-2, -3),
-    new Point(0, 0),
-    new Point(2, 3),
+    new Point(-3, -1),
+    new Point(0, 3),
+    new Point(3, 1),
     new Point(4, 4),
   ];
 
@@ -82,12 +84,18 @@ const App: Component = () => {
     setHeight(canvas.height);
   };
 
-  const getDrawConfig = (color: Color, offset: Point = new Point(0, 0)): DrawConfig => {
+  const getDrawConfig = (
+    color: Color,
+    width: number,
+    offset: Point = new Point(0, 0)
+  ): DrawConfig => {
     return {
       color: color,
       canvas: canvas,
       scale: Constants.scale,
       offset: offset,
+      width: width,
+      solid: true,
     };
   };
 
@@ -97,8 +105,14 @@ const App: Component = () => {
         drawGridPoint(idx, idy);
       }
     }
-    drawCurvePointCartSegments([new Point(0, -100), new Point(0, 100)], getDrawConfig(Color.black));
-    drawCurvePointCartSegments([new Point(-100, 0), new Point(100, 0)], getDrawConfig(Color.black));
+    drawCurvePointCartSegments(
+      [new Point(0, -100), new Point(0, 100)],
+      getDrawConfig(Color.black, 1)
+    );
+    drawCurvePointCartSegments(
+      [new Point(-100, 0), new Point(100, 0)],
+      getDrawConfig(Color.black, 1)
+    );
   };
 
   const drawSplines = () => {
@@ -122,7 +136,21 @@ const App: Component = () => {
       );
     });
 
-    drawCurvePointCartSegments(spline, getDrawConfig(Color.purple));
+    const config = getDrawConfig(Color.black, 1.0);
+    config.solid = false;
+    drawCurvePointCartSegments(points(), config);
+
+    /*
+    if (splineMode() != 0) {
+      config.solid = true;
+      config.color = Color.red;
+      const dpoints = createSplineNurbTangents(points(), splineMode());
+      for (let idx = 0; idx != dpoints.length - 2; idx += 2) {
+        drawLine(dpoints[idx], dpoints[idx + 1], config);
+      }
+    }
+    */
+    drawCurvePointCartSegments(spline, getDrawConfig(Color.purple, 2));
   };
 
   const drawGridPoint = (x: number, y: number) => {
@@ -158,7 +186,12 @@ const App: Component = () => {
       init();
     }
     context.strokeStyle = config.color;
-    context.lineWidth = 2;
+    context.lineWidth = config.width;
+    if (!config.solid) {
+      context.setLineDash([5, 10]);
+    } else {
+      context.setLineDash([]);
+    }
     context.beginPath();
     context.moveTo(
       (p1.x + config.offset.x) * config.scale + config.canvas.width / 2 + config.offset.x,
@@ -273,7 +306,9 @@ const App: Component = () => {
 
   const touchMoveHandler = (data: TouchEvent) => {
     const pos = getTouchPos(canvas, data.touches[0]);
-    moveHandler(pos);
+    if (pos.x > 0 && pos.x < canvas.width && pos.y > 0 && pos.y < canvas.height) {
+      moveHandler(pos);
+    }
   };
 
   onMount(() => {
@@ -305,13 +340,19 @@ const App: Component = () => {
           id="main-canvas"
         ></canvas>
         <div>
-          <button onClick={resetButtonHandler} class="actionButton">
-            Reset
-          </button>
+          <div class="label">{splineMode() == 0 ? 'Bezier' : `NURBS degree ${splineMode()}`}</div>
 
-          <button onClick={toggleTypeHander} class="actionButton">
-            Switch to {splineMode() !== 4 ? `NURB degree ${splineMode() + 1}` : 'Bezier'}
-          </button>
+          <div class="label">
+            <button onClick={toggleTypeHander} class="actionButtonWide">
+              Switch to {splineMode() !== 4 ? `NURBS degree ${splineMode() + 1}` : 'Bezier'}
+            </button>
+          </div>
+
+          <div class="label">
+            <button onClick={resetButtonHandler} class="actionButtonWide">
+              Reset
+            </button>
+          </div>
         </div>
       </header>
     </div>

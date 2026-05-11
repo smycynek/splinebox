@@ -2,7 +2,7 @@
 
 Copyright 2026 Steven Mycynek
 
-version: 000214
+version: 000225
 
 # A simple spline app
 
