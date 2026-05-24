@@ -1,4 +1,4 @@
-import { createSignal, onMount, type Component } from 'solid-js';
+import { createSignal, onMount, Show, type Component } from 'solid-js';
 import styles from './App.module.css';
 import { Point } from './Point';
 import { Color } from './color';
@@ -7,7 +7,7 @@ import { Logger, LoggerLevel } from './Logger';
 // import { createSplineBezier } from './bezier';
 import { getMousePos, getTouchPos, near } from './utility';
 import { Constants } from './constants';
-import { createSplineNurbs, createSplineNurbTangents } from './nurbs';
+import { createSplineNurbNormals, createSplineNurbs, createSplineNurbTangents } from './nurbs';
 import { createSplineBezier } from './bezier';
 
 interface DrawConfig {
@@ -22,9 +22,9 @@ interface DrawConfig {
 const App: Component = () => {
   let canvas: HTMLCanvasElement;
   let context: CanvasRenderingContext2D;
-  // Canvas height
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [height, setHeight] = createSignal(0);
+  const [normalControlEnabled, setNormalControlEnabled] = createSignal(false);
+  const [showNormals, setShowNormals] = createSignal(false);
+  const [setHeight] = createSignal(0);
   const [splineMode, setSplineMode] = createSignal(0);
 
   const [pointIndex, setPointIndex] = createSignal(-1);
@@ -36,6 +36,11 @@ const App: Component = () => {
     new Point(3, 1),
     new Point(4, 4),
   ];
+
+  const setShowNormalsW = (val: boolean) => {
+    setShowNormals(val);
+    drawSplines();
+  };
 
   const [points, setPoints] = createSignal([...standardPoints]);
 
@@ -140,16 +145,22 @@ const App: Component = () => {
     config.solid = false;
     drawCurvePointCartSegments(points(), config);
 
-    /*
     if (splineMode() != 0) {
       config.solid = true;
       config.color = Color.red;
       const dpoints = createSplineNurbTangents(points(), splineMode());
       for (let idx = 0; idx != dpoints.length - 2; idx += 2) {
-        drawLine(dpoints[idx], dpoints[idx + 1], config);
+        //   drawLine(dpoints[idx], dpoints[idx + 1], config);
+      }
+      if (showNormals()) {
+        config.color = Color.blue;
+        const dpoints2 = createSplineNurbNormals(points(), splineMode());
+        for (let idx = 0; idx != dpoints2.length - 2; idx += 2) {
+          drawLine(dpoints2[idx], dpoints2[idx + 1], config);
+        }
       }
     }
-    */
+
     drawCurvePointCartSegments(spline, getDrawConfig(Color.purple, 2));
   };
 
@@ -246,8 +257,15 @@ const App: Component = () => {
     setSplineMode(splineMode() + 1);
     if (splineMode() > 4) {
       setSplineMode(0);
+      setShowNormalsW(false);
+      setNormalControlEnabled(false);
     }
     drawSplines();
+    if (splineMode() > 1) {
+      setNormalControlEnabled(true);
+    } else {
+      setNormalControlEnabled(false);
+    }
   };
 
   const doubleClickHandler = (data: MouseEvent) => {
@@ -316,7 +334,7 @@ const App: Component = () => {
   });
 
   return (
-    <div>
+    <div onMouseUp={mouseUpHandler}>
       <header class={styles.header}>
         <h1 title="Toggle Log" onClick={[toggleLog, null]}>
           Spline Box
@@ -348,6 +366,17 @@ const App: Component = () => {
             </button>
           </div>
 
+          <Show when={normalControlEnabled()}>
+            <div class="label">
+              Show normals
+              <input
+                type="checkbox"
+                onChange={(e) => setShowNormalsW(e.currentTarget.checked)}
+                checked={showNormals()}
+                class="actionButtonWide"
+              ></input>
+            </div>
+          </Show>
           <div class="label">
             <button onClick={resetButtonHandler} class="actionButtonWide">
               Reset
