@@ -43,17 +43,14 @@ export function createSplineNurbNormals(points: Point[], degree: number) {
     const derivative = curve.evaluator(1);
     const p1a = curve.evaluate([], idx);
     const p1 = new Point(p1a[0], p1a[1]);
-    const out: number[] = [];
-    const dval = derivative(out, idx);
+    const dValP = Point.fromArray(derivative([], idx));
+    const p1ToTangent = Vector.fromTriple(dValP.subtract(p1));
+    const normal = p1ToTangent.cross(new Vector(0, 0, -1)).normalize();
 
-    const p2 = new Point(p1a[0] + -dval[1], p1a[0] + dval[0]);
+    const p2 = new Point(p1a[0] + normal.x, p1a[1] + normal.y);
 
-    const sub: Vector = Vector.fromTriple(p2.subtract(p1));
-
-    const vNor = sub.normalize();
-    const p2a = p1.add(vNor);
-    interPoints.push(p1);
-    interPoints.push(p2a as Point);
+    interPoints.push(p1 as Point);
+    interPoints.push(p2 as Point);
   }
   return interPoints;
 }
