@@ -1,6 +1,7 @@
 import { Point } from './Point';
 
 import nurbs from 'nurbs';
+import { Vector } from './Vector';
 
 export function createSplineNurbs(points: Point[], degree: number) {
   const sPoints = points.map((p) => [p.x, p.y]);
@@ -22,7 +23,8 @@ export function createSplineNurbTangents(points: Point[], degree: number) {
   const domain = curve.domain[0];
   for (let idx = domain[0]; idx < domain[1]; idx += 0.01) {
     const derivative = curve.evaluator(1);
-    const p1a = curve.evaluate([], idx);
+    const out: number[] = [];
+    const p1a = curve.evaluate(out, idx);
     const p1 = new Point(p1a[0], p1a[1]);
     const dval = derivative([], idx);
     const p2 = new Point(dval[0], dval[1]);
@@ -41,10 +43,17 @@ export function createSplineNurbNormals(points: Point[], degree: number) {
     const derivative = curve.evaluator(1);
     const p1a = curve.evaluate([], idx);
     const p1 = new Point(p1a[0], p1a[1]);
-    const dval = derivative([], idx);
-    const p2 = new Point(-dval[1], dval[0]);
+    const out: number[] = [];
+    const dval = derivative(out, idx);
+
+    const p2 = new Point(p1a[0] + -dval[1], p1a[0] + dval[0]);
+
+    const sub: Vector = Vector.fromTriple(p2.subtract(p1));
+
+    const vNor = sub.normalize();
+    const p2a = p1.add(vNor);
     interPoints.push(p1);
-    interPoints.push(p2);
+    interPoints.push(p2a as Point);
   }
   return interPoints;
 }
