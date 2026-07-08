@@ -340,8 +340,8 @@ const App: Component = () => {
           Spline Box
         </h1>
         <p>
-          Hours of Fun. Drag points. Double-click/tap to add a point. Double-click a point to remove
-          it.
+          Hours of Fun. Drag points. Double-click/tap to add a point. Double-click/tap a point to
+          remove it. Try out the different spline types and display of normal rays.
         </p>
       </header>
       <header class={styles.header}>
@@ -381,6 +381,15 @@ const App: Component = () => {
             <button onClick={resetButtonHandler} class="actionButtonWide">
               Reset
             </button>
+          </div>
+          <div class="label cite">
+            <a
+              href="https://github.com/smycynek/splinebox"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              https://github.com/smycynek/splinebox
+            </a>
           </div>
         </div>
       </header>
