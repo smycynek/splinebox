@@ -19,15 +19,16 @@ export function createSplineNurbs(points: Point[], degree: number) {
 export function createSplineNurbTangents(points: Point[], degree: number) {
   const sPoints = points.map((p) => [p.x, p.y]);
   const curve = nurbs(sPoints, degree);
+  const derivative = curve.evaluator(1);
   const interPoints: Point[] = [];
   const domain = curve.domain[0];
   for (let idx = domain[0]; idx < domain[1]; idx += 0.01) {
-    const derivative = curve.evaluator(1);
-    const out: number[] = [];
-    const p1a = curve.evaluate(out, idx);
+    const p1a = curve.evaluate([], idx);
     const p1 = new Point(p1a[0], p1a[1]);
     const dval = derivative([], idx);
-    const p2 = new Point(dval[0], dval[1]);
+    // The derivative is a direction vector, not a point on the curve.
+    const tangent = new Vector(dval[0], dval[1], 0).normalize();
+    const p2 = new Point(p1.x + tangent.x, p1.y + tangent.y);
     interPoints.push(p1);
     interPoints.push(p2);
   }
@@ -37,20 +38,20 @@ export function createSplineNurbTangents(points: Point[], degree: number) {
 export function createSplineNurbNormals(points: Point[], degree: number) {
   const sPoints = points.map((p) => [p.x, p.y]);
   const curve = nurbs(sPoints, degree);
+  const derivative = curve.evaluator(1);
   const interPoints: Point[] = [];
   const domain = curve.domain[0];
   for (let idx = domain[0]; idx < domain[1]; idx += 0.1) {
-    const derivative = curve.evaluator(1);
     const p1a = curve.evaluate([], idx);
     const p1 = new Point(p1a[0], p1a[1]);
-    const dValP = Point.fromArray(derivative([], idx));
-    const p1ToTangent = Vector.fromTriple(dValP.subtract(p1));
-    const normal = p1ToTangent.cross(new Vector(0, 0, -1)).normalize();
+    const dval = derivative([], idx);
+    const tangent = new Vector(dval[0], dval[1], 0);
+    const normal = tangent.cross(new Vector(0, 0, -1)).normalize();
 
-    const p2 = new Point(p1a[0] + normal.x, p1a[1] + normal.y);
+    const p2 = new Point(p1.x + normal.x, p1.y + normal.y);
 
-    interPoints.push(p1 as Point);
-    interPoints.push(p2 as Point);
+    interPoints.push(p1);
+    interPoints.push(p2);
   }
   return interPoints;
 }
