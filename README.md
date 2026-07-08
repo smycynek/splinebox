@@ -2,13 +2,11 @@
 
 Copyright 2026 Steven Mycynek
 
-version: 000212
+version: 000233
 
 # A simple spline app
 
 ## Installation
-
-You will need a recent version of [Node.js](https://nodejs.org/en) and either npm or [bun](https://bun.com/)
 
 // Set up and debug
 

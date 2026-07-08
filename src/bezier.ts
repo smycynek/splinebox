@@ -1,9 +1,10 @@
 import { lineString, bezierSpline } from '@turf/turf';
 import { Point } from './Point';
 
-export function createSpline(points: Point[]) {
+export function createSplineBezier(points: Point[]): Point[] {
   const sPoints = points.map((p) => [p.x, p.y]);
   const line = lineString(sPoints);
   const curved = bezierSpline(line);
-  return curved;
+  const interPoints = curved.geometry.coordinates.map((c: number[]) => new Point(c[0], c[1]));
+  return interPoints;
 }
