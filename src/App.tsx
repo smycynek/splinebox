@@ -341,7 +341,7 @@ const App: Component = () => {
         </h1>
         <p>
           Hours of Fun. Drag points. Double-click/tap to add a point. Double-click/tap a point to
-          remove it. Try out the different spline types and display of normal rays.
+          remove it. Try out the different spline types and display of normal/curvature rays.
         </p>
       </header>
       <header class={styles.header}>
@@ -368,7 +368,7 @@ const App: Component = () => {
 
           <Show when={normalControlEnabled()}>
             <div class="label">
-              Show normals
+              Show normals and curvature
               <input
                 type="checkbox"
                 onChange={(e) => setShowNormalsW(e.currentTarget.checked)}
