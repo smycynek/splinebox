@@ -147,11 +147,6 @@ const App: Component = () => {
 
     if (splineMode() != 0) {
       config.solid = true;
-      config.color = Color.red;
-      const dpoints = createSplineNurbTangents(points(), splineMode());
-      for (let idx = 0; idx != dpoints.length - 2; idx += 2) {
-        //   drawLine(dpoints[idx], dpoints[idx + 1], config);
-      }
       if (showNormals()) {
         config.color = Color.blue;
         const dpoints2 = createSplineNurbNormals(points(), splineMode());
