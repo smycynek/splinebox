@@ -13,6 +13,11 @@ body {
   justify-content: center;
   align-items: center;
 }
+.cite {
+  font-family: sans-serif;
+  font-size: small;
+  margin-top: 20px;
+}
 .actionButton,
 .actionButtonWide {
   border-color: black;
