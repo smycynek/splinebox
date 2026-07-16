@@ -16,7 +16,6 @@ export function createSplineNurbs(points: Point[], degree: number) {
   return interPoints;
 }
 
-
 function calculateCurvature(curve: ReturnType<typeof nurbs>, t: number): number {
   const d1val: [number, number] = curve.evaluator(1)([], t);
   const d2val: [number, number] = curve.evaluator(2)([], t);

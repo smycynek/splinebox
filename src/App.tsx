@@ -7,7 +7,7 @@ import { Logger, LoggerLevel } from './Logger';
 // import { createSplineBezier } from './bezier';
 import { getMousePos, getTouchPos, near } from './utility';
 import { Constants } from './constants';
-import { createSplineNurbNormals, createSplineNurbs, createSplineNurbTangents } from './nurbs';
+import { createSplineNurbNormals, createSplineNurbs } from './nurbs';
 import { createSplineBezier } from './bezier';
 
 interface DrawConfig {
@@ -22,10 +22,10 @@ interface DrawConfig {
 const App: Component = () => {
   let canvas: HTMLCanvasElement;
   let context: CanvasRenderingContext2D;
-  const [normalControlEnabled, setNormalControlEnabled] = createSignal(false);
+  const [normalControlEnabled, setNormalControlEnabled] = createSignal(true);
   const [showNormals, setShowNormals] = createSignal(false);
   const [setHeight] = createSignal(0);
-  const [splineMode, setSplineMode] = createSignal(0);
+  const [splineMode, setSplineMode] = createSignal(2);
 
   const [pointIndex, setPointIndex] = createSignal(-1);
 
@@ -251,8 +251,8 @@ const App: Component = () => {
   const toggleTypeHander = () => {
     setSplineMode(splineMode() + 1);
     if (splineMode() > 4) {
-      setSplineMode(0);
-      setShowNormalsW(false);
+      setSplineMode(2);
+      // setShowNormalsW(false);
       setNormalControlEnabled(false);
     }
     drawSplines();
@@ -271,7 +271,7 @@ const App: Component = () => {
     for (let ii = 0; ii < points().length; ii++) {
       if (near(pt, points()[ii])) {
         addNewPoint = false;
-        if (points().length <= 2) {
+        if (points().length <= 5) {
           break;
         }
         const current = points();
@@ -357,7 +357,7 @@ const App: Component = () => {
 
           <div class="label">
             <button onClick={toggleTypeHander} class="actionButtonWide">
-              Switch to {splineMode() !== 4 ? `NURBS degree ${splineMode() + 1}` : 'Bezier'}
+              Change degree
             </button>
           </div>
 
