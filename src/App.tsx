@@ -8,7 +8,7 @@ import { Logger, LoggerLevel } from './Logger';
 import { getMousePos, getTouchPos, near } from './utility';
 import { Constants } from './constants';
 import { createSplineNurbNormals, createSplineNurbs } from './nurbs';
-import { createSplineBezier } from './bezier';
+import { createSplineBezierManual } from './bezier';
 
 interface DrawConfig {
   color: Color;
@@ -22,19 +22,19 @@ interface DrawConfig {
 const App: Component = () => {
   let canvas: HTMLCanvasElement;
   let context: CanvasRenderingContext2D;
-  const [normalControlEnabled, setNormalControlEnabled] = createSignal(true);
+  const [normalControlEnabled, setNormalControlEnabled] = createSignal(false);
   const [showNormals, setShowNormals] = createSignal(false);
   const [setHeight] = createSignal(0);
-  const [splineMode, setSplineMode] = createSignal(2);
+  const [splineMode, setSplineMode] = createSignal(0);
 
   const [pointIndex, setPointIndex] = createSignal(-1);
 
   const standardPoints = [
     new Point(-4, -4),
-    new Point(-3, -1),
+    new Point(-4, 4),
     new Point(0, 3),
-    new Point(3, 1),
-    new Point(4, 4),
+    new Point(4, -3),
+    new Point(1, -5),
   ];
 
   const setShowNormalsW = (val: boolean) => {
@@ -128,22 +128,57 @@ const App: Component = () => {
     let spline;
 
     if (splineMode() === 0) {
-      spline = createSplineBezier(points());
+      spline = createSplineBezierManual(points()[0], points()[1], points()[2], points()[3]);
+
+      drawPoint(
+        canvas.width / 2 + points()[0].x * Constants.scale,
+        canvas.height / 2 - points()[0].y * Constants.scale,
+        Color.black,
+        3
+      );
+
+      drawPoint(
+        canvas.width / 2 + points()[1].x * Constants.scale,
+        canvas.height / 2 - points()[1].y * Constants.scale,
+        Color.black,
+        3
+      );
+
+      drawPoint(
+        canvas.width / 2 + points()[2].x * Constants.scale,
+        canvas.height / 2 - points()[2].y * Constants.scale,
+        Color.black,
+        3
+      );
+
+      drawPoint(
+        canvas.width / 2 + points()[3].x * Constants.scale,
+        canvas.height / 2 - points()[3].y * Constants.scale,
+        Color.black,
+        3
+      );
     } else {
       spline = createSplineNurbs(points(), splineMode());
+
+      points().forEach((p) => {
+        drawPoint(
+          canvas.width / 2 + p.x * Constants.scale,
+          canvas.height / 2 - p.y * Constants.scale,
+          Color.black,
+          4
+        );
+      });
     }
-    points().forEach((p) => {
-      drawPoint(
-        canvas.width / 2 + p.x * Constants.scale,
-        canvas.height / 2 - p.y * Constants.scale,
-        Color.black,
-        4
-      );
-    });
 
     const config = getDrawConfig(Color.black, 1.0);
     config.solid = false;
-    drawCurvePointCartSegments(points(), config);
+
+    if (splineMode() === 0) {
+      const pointsSp = [points()[0], points()[1], points()[2], points()[3]];
+      drawCurvePointCartSegments(pointsSp, config);
+    } else {
+      drawCurvePointCartSegments(points(), config);
+    }
 
     if (splineMode() != 0) {
       config.solid = true;
@@ -249,9 +284,14 @@ const App: Component = () => {
   };
 
   const toggleTypeHander = () => {
-    setSplineMode(splineMode() + 1);
-    if (splineMode() > 4) {
+    if (splineMode() === 0) {
       setSplineMode(2);
+    } else {
+      setSplineMode(splineMode() + 1);
+    }
+
+    if (splineMode() > 4) {
+      setSplineMode(0);
       // setShowNormalsW(false);
       setNormalControlEnabled(false);
     }
@@ -264,6 +304,9 @@ const App: Component = () => {
   };
 
   const doubleClickHandler = (data: MouseEvent) => {
+    if (splineMode() === 0) {
+      return;
+    }
     const ptOriginal = getMousePos(canvas, data);
     const pt = cartesianAdjust(ptOriginal);
 
@@ -335,8 +378,9 @@ const App: Component = () => {
           Spline Box
         </h1>
         <p>
-          Hours of Fun. Drag points. Double-click/tap to add a point. Double-click/tap a point to
-          remove it. Try out the different spline types and display of normal/curvature rays.
+          Hours of Fun. Drag points. Try out a 4-point Bezier. <strong>For nurbs only,</strong>{' '}
+          double-click/tap to add or remove a point. Try out the different spline types and display
+          of normal/curvature rays.
         </p>
       </header>
       <header class={styles.header}>
@@ -357,7 +401,7 @@ const App: Component = () => {
 
           <div class="label">
             <button onClick={toggleTypeHander} class="actionButtonWide">
-              Change degree
+              Change type
             </button>
           </div>
 
