@@ -31,7 +31,6 @@
   },
   "dependencies": {
     "@corvu/dialog": "^0.2.4",
-    "@turf/turf": "^7.3.5",
     "install": "^0.13.0",
     "nurbs": "^1.1.1",
     "solid-js": "^1.9.5"
