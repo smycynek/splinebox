@@ -245,7 +245,6 @@ const App: Component = () => {
     const newPoints = [...points()];
     newPoints[pointIndex()] = cartesianAdjust(pt);
 
-
     setPoints(newPoints);
     drawSplines();
   };
@@ -354,9 +353,8 @@ const App: Component = () => {
           Spline Box
         </h1>
         <p>
-          Hours of Fun. Drag points.
-          Double-click/tap to add or remove a point. Try out the different spline types and display
-          of normal/curvature rays.
+          Hours of Fun. Drag points. Double-click/tap to add or remove a point. Try out the
+          different spline types and display of normal/curvature rays.
         </p>
       </header>
       <header class={styles.header}>

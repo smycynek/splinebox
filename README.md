@@ -2,11 +2,11 @@
 
 Copyright 2026 Steven Mycynek
 
-version: 000247
+version: 000248
 
 # A simple spline app
 
-In my spare time, I've tried to learn more about splines. So far, I have a simple bezier implementation from scratch 
+In my spare time, I've tried to learn more about splines. So far, I have a simple bezier implementation from scratch
 (that I moved to another repo, see https://stevenvictor.net/bezierbox/ ), and I have some nurbs using a library, though I did the normal and curvature calculations myself.
 
 I'll combine some of this with the polynomial and
