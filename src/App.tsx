@@ -23,7 +23,8 @@ const App: Component = () => {
   let context: CanvasRenderingContext2D;
   const [normalControlEnabled, setNormalControlEnabled] = createSignal(true);
   const [showNormals, setShowNormals] = createSignal(false);
-  const [setHeight] = createSignal(0);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [height, setHeight] = createSignal(0);
   const [splineMode, setSplineMode] = createSignal(2);
 
   const [pointIndex, setPointIndex] = createSignal(-1);
@@ -238,6 +239,7 @@ const App: Component = () => {
   };
 
   const moveHandler = (pt: Point) => {
+    // DEMO_2_3, move_handler
     if (pointIndex() == -1) {
       return;
     }

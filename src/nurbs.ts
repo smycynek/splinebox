@@ -5,6 +5,7 @@ import { Vector } from './Vector';
 
 export function createSplineNurbs(points: Point[], degree: number) {
   const sPoints = points.map((p) => [p.x, p.y]);
+  // DEMO_2_0, nurbs library
   const curve = nurbs(sPoints, degree);
   const interPoints: Point[] = [];
   const domain = curve.domain[0];
@@ -16,6 +17,7 @@ export function createSplineNurbs(points: Point[], degree: number) {
   return interPoints;
 }
 
+// DEMO_2_2, curvature
 function calculateCurvature(curve: ReturnType<typeof nurbs>, t: number): number {
   const d1val: [number, number] = curve.evaluator(1)([], t);
   const d2val: [number, number] = curve.evaluator(2)([], t);
@@ -29,6 +31,7 @@ function calculateCurvature(curve: ReturnType<typeof nurbs>, t: number): number 
   return firstDerivative.cross(secondDerivative).magnitude() / (speed * speed * speed);
 }
 
+// DEMO_2_1, calculate normals
 export function createSplineNurbNormals(points: Point[], degree: number) {
   const sPoints = points.map((p) => [p.x, p.y]);
   const curve = nurbs(sPoints, degree);
@@ -40,7 +43,7 @@ export function createSplineNurbNormals(points: Point[], degree: number) {
     const p1 = new Point(p1a[0], p1a[1]);
     const dval = derivative([], idx);
     const tangent = new Vector(dval[0], dval[1], 0); // make it a 3D vector for cross product
-    const normal = tangent.cross(new Vector(0, 0, -1)).normalize(); // noraml is perpendicular to tangent;
+    const normal = tangent.cross(new Vector(0, 0, -1)).normalize(); // noramal is perpendicular to tangent;
 
     const curvature = calculateCurvature(curve, idx);
     const length = 0.5 + (curvature === 0 ? 1 : Math.abs(curvature));
