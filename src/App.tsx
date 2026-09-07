@@ -23,19 +23,18 @@ const App: Component = () => {
   let context: CanvasRenderingContext2D;
   const [normalControlEnabled, setNormalControlEnabled] = createSignal(true);
   const [showNormals, setShowNormals] = createSignal(false);
-  const [setHeight] = createSignal(0);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [height, setHeight] = createSignal(0);
   const [splineMode, setSplineMode] = createSignal(2);
 
   const [pointIndex, setPointIndex] = createSignal(-1);
 
   const standardPoints = [
-    new Point(-4, -4),
-    new Point(-4, 4),
-    new Point(0, 3),
-    new Point(4, -3),
-    new Point(6, -6),
+    new Point(-6, -6),
+    new Point(-2, -3),
+    new Point(3, -3),
     new Point(3, 5),
-    new Point(4, 7),
+    new Point(6, 6),
   ];
 
   const setShowNormalsW = (val: boolean) => {
@@ -238,6 +237,7 @@ const App: Component = () => {
   };
 
   const moveHandler = (pt: Point) => {
+    // DEMO_2_3, move_handler
     if (pointIndex() == -1) {
       return;
     }
