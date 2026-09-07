@@ -42,10 +42,15 @@ export function createSplineNurbNormals(points: Point[], degree: number) {
     const p1a = curve.evaluate([], idx);
     const p1 = new Point(p1a[0], p1a[1]);
     const dval = derivative([], idx);
-    const tangent = new Vector(dval[0], dval[1], 0); // make it a 3D vector for cross product
-    const normal = tangent.cross(new Vector(0, 0, -1)).normalize(); // noramal is perpendicular to tangent;
-
+    const tangent = new Vector(dval[0], dval[1], 0);
     const curvature = calculateCurvature(curve, idx);
+    let normal = new Vector(tangent.y, -tangent.x, 0);
+    const secondDerivative = curve.evaluator(2);
+    const secondDerivateVector = secondDerivative([], idx);
+    if (secondDerivateVector[1] < 0) {
+      // if second derivative negative, we are  concave down, so flip normal.
+      normal = new Vector(-tangent.y, tangent.x);
+    }
     const length = 0.5 + (curvature === 0 ? 1 : Math.abs(curvature));
     const p2 = new Point(p1.x + normal.x * length, p1.y + normal.y * length); // scale normal by curvature to visualize sharp bends
 

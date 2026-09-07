@@ -30,13 +30,11 @@ const App: Component = () => {
   const [pointIndex, setPointIndex] = createSignal(-1);
 
   const standardPoints = [
-    new Point(-4, -4),
-    new Point(-4, 4),
-    new Point(0, 3),
-    new Point(4, -3),
-    new Point(6, -6),
+    new Point(-6, -6),
+    new Point(-2, -3),
+    new Point(3, -3),
     new Point(3, 5),
-    new Point(4, 7),
+    new Point(6, 6),
   ];
 
   const setShowNormalsW = (val: boolean) => {
