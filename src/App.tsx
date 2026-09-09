@@ -25,7 +25,7 @@ const App: Component = () => {
   const [showNormals, setShowNormals] = createSignal(false);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [height, setHeight] = createSignal(0);
-  const [splineMode, setSplineMode] = createSignal(2);
+  const [splineMode, setSplineMode] = createSignal(3);
 
   const [pointIndex, setPointIndex] = createSignal(-1);
 
@@ -260,13 +260,13 @@ const App: Component = () => {
 
   const toggleTypeHander = () => {
     if (splineMode() === 0) {
-      setSplineMode(2);
+      setSplineMode(3);
     } else {
       setSplineMode(splineMode() + 1);
     }
 
     if (splineMode() > 4) {
-      setSplineMode(2);
+      setSplineMode(3);
       // setShowNormalsW(false);
       setNormalControlEnabled(false);
     }
@@ -381,7 +381,7 @@ const App: Component = () => {
 
           <Show when={normalControlEnabled()}>
             <div class="label">
-              Show normals and curvature
+              Show normals and curvature (beta)
               <input
                 type="checkbox"
                 onChange={(e) => setShowNormalsW(e.currentTarget.checked)}

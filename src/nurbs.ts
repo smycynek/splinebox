@@ -47,12 +47,13 @@ export function createSplineNurbNormals(points: Point[], degree: number) {
     let normal = new Vector(tangent.y, -tangent.x, 0);
     const secondDerivative = curve.evaluator(2);
     const secondDerivateVector = secondDerivative([], idx);
-    if (secondDerivateVector[1] < 0) {
-      // if second derivative negative, we are  concave down, so flip normal.
+    const cross2d = tangent.x * secondDerivateVector[1] - tangent.y * secondDerivateVector[0];
+    if (cross2d < 0) {
+      // if signed curvature is negative, we are concave down, so flip normal.
       normal = new Vector(-tangent.y, tangent.x);
     }
-    const length = 0.5 + (curvature === 0 ? 1 : Math.abs(curvature));
-    const p2 = new Point(p1.x + normal.x * length, p1.y + normal.y * length); // scale normal by curvature to visualize sharp bends
+
+    const p2 = new Point(p1.x + normal.x * curvature, p1.y + normal.y * curvature); // scale normal by curvature to visualize sharp bends
 
     interPoints.push(p1);
     interPoints.push(p2);
