@@ -352,6 +352,7 @@ const App: Component = () => {
         <h1 title="Toggle Log" onClick={[toggleLog, null]}>
           Spline Box
         </h1>
+        <h2>Hold on to your socks!</h2>
         <p>
           Hours of Fun. Drag points. Double-click/tap to add or remove a point. Try out the
           different spline types and display of normal/curvature rays.
